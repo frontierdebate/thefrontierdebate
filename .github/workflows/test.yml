@@ -1,0 +1,60 @@
+name: Test run (nothing is saved or published)
+
+on:
+  workflow_dispatch:
+    inputs:
+      first:
+        description: "Which model writes first in this test"
+        type: choice
+        options: [anthropic, openai]
+        default: anthropic
+
+permissions:
+  contents: read   # read-only: this workflow cannot change the repository
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # No GITHUB_TOKEN is passed, so no issues are created. Nothing is committed,
+      # so the live site and the real debate are untouched.
+      - name: Essay 1 (draft + publish + Ledger)
+        run: node scripts/draft.mjs && node scripts/publish.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          FIRST_SPEAKER: ${{ inputs.first }}
+      - name: Essay 2, the reply (draft + novelty check + publish + Ledger)
+        run: node scripts/draft.mjs && node scripts/publish.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Show the results on the run page
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            const { execSync } = require("child_process");
+            const files = execSync("git ls-files --others --exclude-standard data/essays").toString().trim().split("\n").filter(Boolean);
+            let out = "# Test run results\n\nNothing below was saved or published.\n\n";
+            for (const f of files) {
+              const e = JSON.parse(fs.readFileSync(f, "utf8"));
+              out += `---\n\n## ${e.title}\n\n*${e.modelName} (\`${e.modelId}\`), ${e.words} words, novelty ${e.novelty.final}/10${e.novelty.rewritten ? " after a rewrite" : ""}*\n\n${e.body}\n\n`;
+            }
+            out += "---\n\n# The Ledger after this test\n\n" + fs.readFileSync("data/ledger.md", "utf8");
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+          '
+      - name: Build the site with the test essays
+        if: always()
+        run: node scripts/build.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-site
+          path: dist
+          retention-days: 7
