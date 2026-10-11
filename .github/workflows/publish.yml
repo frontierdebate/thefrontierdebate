@@ -1,0 +1,37 @@
+name: Evening publish
+
+on:
+  schedule:
+    - cron: "0 16 * * *"  # 16:00 UTC every day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: debate
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Publish the draft (unless vetoed) and update the Ledger
+        run: node scripts/publish.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit (Cloudflare rebuilds the site automatically)
+        run: |
+          git config user.name "debate-bot"
+          git config user.email "debate-bot@users.noreply.github.com"
+          git add -A data moderator
+          git diff --cached --quiet || git commit -m "Publish essay"
+          git push
