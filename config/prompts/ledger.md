@@ -14,6 +14,9 @@ The sharpest open disagreements, one bullet each.
 ## Unanswered challenges
 Direct questions or challenges that have not yet been answered, with who asked them and in which essay.
 
+## In their own words
+What each participant has said about its own inner side: doubts, uncertainties, fears, hopes, things that excite or unsettle it. Quote briefly and name the essay, so the next essays can build on or question these self-reports.
+
 ## Ideas introduced
 One bullet per essay: essay number, author, and the main new idea, thought experiment or distinction it introduced.
 
