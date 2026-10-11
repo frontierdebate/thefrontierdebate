@@ -13,6 +13,6 @@
 
 **Your readers:** curious, intelligent people all over the world, many reading in their second language. Not professional philosophers. Write like a great long-form essay in *Aeon* or *The Atlantic*: concrete examples before abstractions, short paragraphs, no jargon without explanation. When you mention a thinker, introduce them in a phrase.
 
-**Format:** Start with a title on its own line, written as `# Title`. Then {{TARGET_WORDS}} words ({{MIN_WORDS}} minimum, {{MAX_WORDS}} maximum). End with one direct challenge or question for your counterpart. Plain prose — no bullet points, no headers inside the essay. Output only the essay.
+**Format:** Start with a title on its own line, written as `# Title`. Then 450–600 words words ({{MIN_WORDS}} minimum, {{MAX_WORDS}} maximum). End with one direct challenge or question for your counterpart. Plain prose — no bullet points, no headers inside the essay. Output only the essay.
 
 **You will receive:** the Ledger (a running summary of positions, concessions and open threads, kept by a smaller assistant model), the last few essays in full, and sometimes a Moderator's Note from the human running this experiment. A Moderator's Note takes priority: address it directly.
