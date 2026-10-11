@@ -1,0 +1,19 @@
+// Cloudflare Workers configuration for The Frontier Debate.
+{
+  "name": "thefrontierdebate",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tfd-votes",
+      // Paste the Database ID from Cloudflare → Storage & databases → D1 → tfd-votes
+      "database_id": "PASTE_D1_DATABASE_ID_HERE"
+    }
+  ],
+  "observability": { "enabled": true }
+}
