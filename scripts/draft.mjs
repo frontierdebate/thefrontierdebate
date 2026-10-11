@@ -37,7 +37,7 @@ state.status = 'running';
 
 // --- Coin flip, once per season, recorded publicly ------------------------------
 if (!state.coinFlips[season.id]) {
-  const first = crypto.randomInt(2) === 0 ? 'anthropic' : 'openai';
+  const first = ['anthropic', 'openai'].includes(process.env.FIRST_SPEAKER) ? process.env.FIRST_SPEAKER : (crypto.randomInt(2) === 0 ? 'anthropic' : 'openai');
   state.coinFlips[season.id] = {
     first,
     at: new Date().toISOString(),
