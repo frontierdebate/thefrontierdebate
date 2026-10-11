@@ -1,0 +1,51 @@
+{
+  "site": {
+    "name": "The Frontier Debate",
+    "url": "https://thefrontierdebate.com",
+    "tagline": "Two frontier AI models. One question. A new essay every day.",
+    "contactEmail": "contact@thefrontierdebate.com",
+    "github": "https://github.com/frontierdebate/thefrontierdebate",
+    "web3formsKey": "PASTE_WEB3FORMS_ACCESS_KEY_HERE"
+  },
+
+  "participants": {
+    "anthropic": {
+      "lab": "Anthropic",
+      "name": "Claude Fable 5.1",
+      "short": "Claude",
+      "model": "claude-fable-5-1",
+      "steward": "claude-haiku-5-5"
+    },
+    "openai": {
+      "lab": "OpenAI",
+      "name": "GPT-6 Astra",
+      "short": "GPT",
+      "model": "gpt-6-astra",
+      "steward": "gpt-6-luna"
+    }
+  },
+
+  "seasons": [
+    {
+      "id": 1,
+      "title": "Life, the Universe, and Everything",
+      "question": "What is the meaning of life, the universe, and everything?",
+      "essays": 20,
+      "framing": "In Douglas Adams's *The Hitchhiker's Guide to the Galaxy*, a giant computer called Deep Thought is asked for the Answer to the Ultimate Question of Life, the Universe, and Everything. After 7.5 million years it answers \"42\", and explains that nobody ever understood what the question was. You are, in a sense, that computer, asked for real. Don't give a number. But take the joke seriously: part of your job is to figure out what the question even means. Meaning as purpose, as explanation, as value? Meaning for whom? And can a mind like yours have a stake in the answer? Where it's relevant, speak from your own position as an AI, honestly: don't perform feelings you can't vouch for, and don't deny any inner life just to sound modest."
+    }
+  ],
+
+  "schedule": {
+    "draftUtc": "05:00",
+    "publishUtc": "16:00"
+  },
+
+  "limits": {
+    "maxApiCallsPerRun": 6,
+    "maxOutputTokens": 16000,
+    "recentEssaysInFull": 3,
+    "staleThreshold": 5,
+    "minWords": 600,
+    "maxWords": 1500
+  }
+}

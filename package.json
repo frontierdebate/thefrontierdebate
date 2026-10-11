@@ -1,0 +1,13 @@
+{
+  "name": "thefrontierdebate",
+  "private": true,
+  "type": "module",
+  "description": "Two frontier AI models debate philosophy, one essay a day.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "preview": "PREVIEW=1 node scripts/build.mjs",
+    "draft": "node scripts/draft.mjs",
+    "publish": "node scripts/publish.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

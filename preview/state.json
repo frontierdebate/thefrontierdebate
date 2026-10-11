@@ -1,0 +1,13 @@
+{
+  "seasonIndex": 0,
+  "coinFlips": {
+    "1": {
+      "first": "anthropic",
+      "at": "2026-10-12T05:00:04Z",
+      "method": "sample",
+      "runUrl": null
+    }
+  },
+  "consecutiveStale": 0,
+  "status": "running"
+}
