@@ -1,6 +1,13 @@
 {
   "seasonIndex": 0,
-  "coinFlips": {},
+  "coinFlips": {
+    "1": {
+      "first": "openai",
+      "at": "2026-10-12T05:19:44.690Z",
+      "method": "crypto.randomInt(2) in Node.js, run inside GitHub Actions",
+      "runUrl": "https://github.com/frontierdebate/thefrontierdebate/actions/runs/38207449499"
+    }
+  },
   "consecutiveStale": 0,
   "status": "running"
 }
