@@ -206,3 +206,12 @@ p { text-wrap: pretty; }
 .foot-links { font-style: normal !important; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+@media (min-width: 1100px) {
+  :root { --measure: 38rem; }
+  body { font-size: 1.32rem; }
+}
+@media (min-width: 1600px) {
+  :root { --measure: 40rem; }
+  body { font-size: 1.42rem; }
+}
