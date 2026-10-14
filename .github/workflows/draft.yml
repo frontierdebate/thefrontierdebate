@@ -33,5 +33,5 @@ jobs:
           git config user.name "debate-bot"
           git config user.email "debate-bot@users.noreply.github.com"
           git add -A data moderator
-          git diff --cached --quiet || git commit -m "Draft written [skip ci]"
+          git diff --cached --quiet || git commit -m "Draft written"
           git push
