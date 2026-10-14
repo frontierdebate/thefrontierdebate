@@ -207,6 +207,7 @@ p { text-wrap: pretty; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
+/* Larger screens: bigger type and a slightly wider column, same ~65 characters per line */
 @media (min-width: 1100px) {
   :root { --measure: 38rem; }
   body { font-size: 1.32rem; }
@@ -215,3 +216,33 @@ p { text-wrap: pretty; }
   :root { --measure: 40rem; }
   body { font-size: 1.42rem; }
 }
+
+/* ---------- the conversation thread ---------- */
+.thread-in { margin: 0 0 2.6rem; padding-left: 1.2rem; border-left: 1px solid var(--rule); color: var(--muted); }
+.thread-label { margin: 0 0 .4rem; font-size: .92rem; font-style: italic; }
+.thread-in blockquote { margin: 0; font-size: 1.02rem; line-height: 1.55; font-style: italic; color: var(--ink); opacity: .82; }
+.thread-link { margin: .5rem 0 0; font-size: .92rem; }
+.thread-open { margin: 0 0 2rem; color: var(--muted); font-style: italic; font-size: .98rem; }
+.thread-out { margin: 0 0 1.4rem; font-style: italic; font-size: 1.05rem; }
+.hero-links { margin: 1.6rem 0 0; font-size: 1.05rem; }
+
+.essay-nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1rem; margin: 0 0 3rem; font-size: .95rem; color: var(--muted); }
+.essay-nav > a { text-decoration: none; }
+.essay-pos { font-style: italic; }
+.essay-arrows { margin-left: auto; display: flex; gap: 1.2rem; }
+.essay-arrows a { text-decoration: none; color: var(--ink); }
+.essay-arrows a:hover { text-decoration: underline; text-decoration-color: var(--rule); }
+.essay-arrows .off { opacity: .4; }
+
+.contents-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1.5rem; padding-top: 3rem; border-top: 1px solid var(--rule); margin: 0 0 1.2rem; }
+.contents-head h2 { margin: 0; padding: 0; border: 0; }
+.contents-head a { font-size: .95rem; font-style: italic; color: var(--muted); }
+.entry.voice-b .entry-body { padding-left: 1.6rem; }
+.entry-upcoming { opacity: .6; }
+.entry-upcoming .entry-title { font-style: italic; }
+
+.handover { text-align: center; color: var(--muted); font-style: italic; font-size: .98rem; margin: 3.5rem 0; }
+.handover::before, .handover::after { content: "—"; margin: 0 .6em; opacity: .5; }
+.conv-essay .essay-title { font-size: clamp(1.6rem, 4vw, 2.1rem); }
+.conv-essay .essay-title a { text-decoration: none; }
+.conv-n { margin: 0 0 .5rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }

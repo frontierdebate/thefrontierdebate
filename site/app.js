@@ -13,6 +13,15 @@
     t.textContent = d.toLocaleString(undefined, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) + ' your time';
   }
 
+  // Left and right arrow keys move between essays.
+  document.addEventListener('keydown', (ev) => {
+    if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '')) return;
+    const sel = ev.key === 'ArrowLeft' ? '.essay-arrows a[aria-label="Previous essay"]' : ev.key === 'ArrowRight' ? '.essay-arrows a[aria-label="Next essay"]' : null;
+    const link = sel && document.querySelector(sel);
+    if (link) location.href = link.href;
+  });
+
   // ---- ratings ---------------------------------------------------------------
   const LABELS = { 1: 'Nothing new', 2: 'A new angle', 3: 'New to me' };
   const describe = (c) => {

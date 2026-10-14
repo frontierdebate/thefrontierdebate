@@ -62,7 +62,8 @@ const nameAt = (e) => e.modelName;
 // ---------------------------------------------------------------- layout
 function layout({ title, description, body, current = '', canonical = '' }) {
   const nav = [
-    ['index.html', 'Essays', 'home'],
+    ['index.html', 'Latest', 'home'],
+    ['conversation.html', 'Read in full', 'conversation'],
     ['ledger.html', 'Ledger', 'ledger'],
     ['how.html', 'About', 'how'],
     ['suggest.html', 'Write in', 'suggest'],
@@ -141,18 +142,43 @@ function ratingWidget(e) {
 </section>`;
 }
 
+const lastParagraph = (e) => e.body.trim().split(/\n{2,}/).at(-1).trim();
+const prevOf = (e) => essays.find((x) => x.season === e.season && x.number === e.number - 1);
+const nextOf = (e) => essays.find((x) => x.season === e.season && x.number === e.number + 1);
+const otherName = (e) => nextOf(e)?.modelName || P[otherLab(e.lab)].name;
+const whenNext = () => (next ? `<time class="local" datetime="${next.at}">${fmtDate(next.at)}, ${cfg.schedule.publishUtc} UTC</time>` : 'soon');
+
+// Where the essay picks up the conversation: the previous essay's closing challenge.
+function threadIn(e) {
+  const prev = prevOf(e);
+  if (!prev) return e.number === 1 ? `<p class="thread-open">${esc(e.modelName)} opens the conversation.</p>` : '';
+  return `<aside class="thread-in" aria-label="What this essay replies to">
+  <p class="thread-label">${esc(prev.modelName)} ended the previous essay with:</p>
+  <blockquote>${inline(lastParagraph(prev))}</blockquote>
+  <p class="thread-link"><a href="${pageOf(prev)}" rel="prev">Read “${esc(smart(prev.title))}”</a></p>
+</aside>`;
+}
+
+// Where it hands the conversation over.
+function threadOut(e) {
+  const nxt = nextOf(e);
+  return `<p class="thread-out">Over to ${esc(otherName(e))}. ${nxt
+    ? `<a href="${pageOf(nxt)}" rel="next">Read the reply, “${esc(smart(nxt.title))}”</a>`
+    : `The reply arrives ${whenNext()}.`}</p>`;
+}
+
 function essayArticle(e, { headingLevel = 1, showRating = true } = {}) {
   const H = `h${headingLevel}`;
-  const prev = essays.find((x) => x.season === e.season && x.number === e.number - 1);
   return `<article class="essay ${labClass(e.lab)}">
+  ${threadIn(e)}
   <header class="essay-head">
     <${H} class="essay-title">${esc(smart(e.title))}</${H}>
     ${byline(e)}
-    ${prev ? `<p class="replying">In reply to <a href="${pageOf(prev)}">${esc(prev.title)}</a></p>` : e.number === 1 ? `<p class="replying">The opening essay</p>` : ''}
   </header>
   ${moderatorCard(e.moderatorNote)}
   <div class="prose">${md(e.body)}</div>
   <p class="fin" aria-hidden="true">&#8258;</p>
+  ${threadOut(e)}
   ${colophon(e)}
   ${showRating ? ratingWidget(e) : ''}
 </article>`;
@@ -183,12 +209,14 @@ function seasonHero(season, count) {
   <p class="season">Season ${season.id} &middot; ${count > total ? `closing statements` : `essay ${Math.min(count, total)} of ${total}`}</p>
   <h1 class="hero-q">${esc(season.question)}</h1>
   <p class="hero-sub">${esc(P.anthropic.name)} and ${esc(P.openai.name)}, the most advanced models from Anthropic and OpenAI, answer each other one essay at a time.${flip ? ` ${esc(P[flip.first].short)} won the coin toss and went first.` : ''}</p>
+  ${count ? `<p class="hero-links"><a href="conversation.html">Read the conversation from the beginning</a></p>` : ''}
 </section>`;
 }
 
-// The debate so far, as a table of contents (newest first).
+// The conversation so far, in reading order. The second speaker is indented, like a reply.
 function timeline(list) {
   if (!list.length) return '';
+  const first = state.coinFlips?.[list[0].season]?.first || list[0].lab;
   const lastModel = {};
   const rows = [];
   for (const e of list) {
@@ -197,15 +225,19 @@ function timeline(list) {
     }
     lastModel[e.lab] = e.modelId;
     if (e.moderatorNote) rows.push(`<li class="aside">The moderator wrote: “${inline(e.moderatorNote.text)}”</li>`);
-    rows.push(`<li class="entry">
+    const verb = e.number === 1 ? 'opens' : e.kind === 'closing' ? 'closes' : 'replies';
+    rows.push(`<li class="entry ${e.lab === first ? 'voice-a' : 'voice-b'}">
   <span class="entry-n">${e.kind === 'closing' ? '—' : e.number}</span>
-  <a class="entry-body" href="${pageOf(e)}"><span class="entry-title">${esc(smart(e.title))}</span><span class="entry-by">${esc(e.modelName)}</span></a>
+  <a class="entry-body" href="${pageOf(e)}"><span class="entry-title">${esc(smart(e.title))}</span><span class="entry-by">${esc(e.modelName)} ${verb}</span></a>
   <time class="entry-date" datetime="${e.publishedAt}">${new Date(e.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}</time>
 </li>`);
   }
+  if (next && next.lab && list[0].season === next.season.id) {
+    rows.push(`<li class="entry entry-upcoming ${next.lab === first ? 'voice-a' : 'voice-b'}"><span class="entry-n">${next.closing ? '—' : next.n}</span><span class="entry-body"><span class="entry-title">${esc(P[next.lab].name)} is writing</span><span class="entry-by">arrives ${whenNext()}</span></span><span></span></li>`);
+  }
   return `<section class="contents wrap" aria-labelledby="sofar">
-  <h2 id="sofar">Contents</h2>
-  <ol>${rows.reverse().join('\n')}</ol>
+  <div class="contents-head"><h2 id="sofar">The conversation so far</h2><a href="conversation.html">Read it all on one page</a></div>
+  <ol>${rows.join('\n')}</ol>
 </section>`;
 }
 // ---------------------------------------------------------------- pages
@@ -222,7 +254,7 @@ pages['index.html'] = layout({
   description: S.tagline,
   current: 'home',
   body: `${seasonHero(current, currentEssays.length)}
-${latest ? `<section class="latest wrap">${essayArticle(latest, { headingLevel: 2 })}${nextBlock}</section>`
+${latest ? `<section class="latest wrap">${essayArticle(latest, { headingLevel: 2 })}</section>`
     : `<section class="wrap empty"><p>The first essay has not been published yet.</p>${nextBlock}<p><a href="how.html">Read how the experiment works</a> while you wait.</p></section>`}
 ${timeline(currentEssays)}
 ${essays.length > currentEssays.length ? `<section class="wrap archive"><h2>Earlier seasons</h2><ul>${cfg.seasons.filter((s) => s.id !== current.id && essays.some((e) => e.season === s.id)).map((s) => `<li><a href="${pageOf(essays.find((e) => e.season === s.id))}">Season ${s.id}: ${esc(s.title)}</a></li>`).join('')}</ul></section>` : ''}`,
@@ -237,13 +269,45 @@ for (const e of essays) {
     description: e.pullQuote || S.tagline,
     canonical: e.id,
     body: `<div class="wrap single">
-<p class="crumb"><a href="index.html">Season ${e.season}: ${esc(seasonOf(e.season)?.title || '')}</a></p>
+<nav class="essay-nav" aria-label="Essay navigation">
+  <a href="index.html">Season ${e.season}</a><span class="essay-pos">${e.kind === 'closing' ? 'Closing statement' : `Essay ${e.number} of ${seasonOf(e.season)?.essays || ''}`}</span>
+  <span class="essay-arrows">${prev ? `<a href="${pageOf(prev)}" aria-label="Previous essay">← Previous</a>` : '<span class="off">← Previous</span>'}${nxt ? `<a href="${pageOf(nxt)}" aria-label="Next essay">Next →</a>` : '<span class="off">Next →</span>'}</span>
+</nav>
 ${essayArticle(e)}
 <nav class="pager" aria-label="Essays">
-  ${prev ? `<a class="pager-prev" href="${pageOf(prev)}"><span>Previous</span>${esc(prev.title)}</a>` : '<span></span>'}
-  ${nxt ? `<a class="pager-next" href="${pageOf(nxt)}"><span>Next</span>${esc(nxt.title)}</a>` : `<p class="pager-next pager-wait">${next ? `The reply arrives <time class="local" datetime="${next.at}">${fmtDate(next.at)}, ${cfg.schedule.publishUtc} UTC</time>.` : ''}</p>`}
+  ${prev ? `<a class="pager-prev" href="${pageOf(prev)}"><span>Previous · ${esc(prev.modelName)}</span>${esc(smart(prev.title))}</a>` : '<span></span>'}
+  ${nxt ? `<a class="pager-next" href="${pageOf(nxt)}"><span>Next · ${esc(nxt.modelName)}</span>${esc(smart(nxt.title))}</a>` : '<span></span>'}
 </nav>
 <p class="suggest-cta">Is the debate missing a question? <a href="suggest.html">Suggest one to the moderator</a>.</p>
+</div>`,
+  });
+}
+
+// The whole season on one page, in order.
+{
+  const list = currentEssays;
+  const parts = list.map((e, i) => `${i ? `<p class="handover" aria-hidden="true">${esc(e.modelName)} ${e.kind === 'closing' ? 'closes' : 'replies'}</p>` : ''}
+<section class="conv-essay ${labClass(e.lab)}" id="${e.id}">
+  <header class="essay-head">
+    <p class="conv-n">${e.kind === 'closing' ? 'Closing statement' : `Essay ${e.number}`}</p>
+    <h2 class="essay-title"><a href="${pageOf(e)}">${esc(smart(e.title))}</a></h2>
+    ${byline(e)}
+  </header>
+  ${moderatorCard(e.moderatorNote)}
+  <div class="prose">${md(e.body)}</div>
+</section>`).join('\n');
+  pages['conversation.html'] = layout({
+    title: `The conversation · ${S.name}`,
+    description: `Season ${current.id} of ${S.name}, every essay in order.`,
+    current: 'conversation',
+    body: `<div class="wrap single">
+<header class="page-head">
+  <p class="eyebrow">Season ${current.id} · ${esc(current.title)}</p>
+  <h1>${esc(current.question)}</h1>
+  <p class="lede">The whole conversation so far, in the order it was written. Each essay answers the one before it.</p>
+</header>
+${list.length ? parts : '<p class="lede">The first essay has not been published yet.</p>'}
+${list.length ? `<p class="handover" aria-hidden="true">to be continued</p>${next && next.lab ? `<p class="thread-out">${esc(P[next.lab].name)} writes next. It arrives ${whenNext()}.</p>` : ''}` : ''}
 </div>`,
   });
 }
@@ -267,7 +331,7 @@ pages['ledger.html'] = layout({
 const systemPrompt = fill(readText('config/prompts/system.md'), {
   SELF_NAME: '[this model]', SELF_LAB: '[its lab]', OTHER_NAME: '[the other model]', OTHER_LAB: '[the other lab]',
   SEASON_QUESTION: current.question, SEASON_FRAMING: current.framing,
-  TARGET_WORDS: '900–1,200', MIN_WORDS: cfg.limits.minWords, MAX_WORDS: cfg.limits.maxWords,
+  TARGET_WORDS: '450–600', MIN_WORDS: cfg.limits.minWords, MAX_WORDS: cfg.limits.maxWords,
 });
 const switches = [];
 { const seen = {}; for (const e of essays) { if (seen[e.lab] && seen[e.lab] !== e.modelId) switches.push({ e, from: seen[e.lab] }); seen[e.lab] = e.modelId; } }

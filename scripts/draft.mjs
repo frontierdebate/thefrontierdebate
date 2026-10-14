@@ -73,7 +73,7 @@ if (human) {
 const system = fill(readText('config/prompts/system.md'), {
   SELF_NAME: me.name, SELF_LAB: me.lab, OTHER_NAME: them.name, OTHER_LAB: them.lab,
   SEASON_QUESTION: season.question, SEASON_FRAMING: season.framing,
-  TARGET_WORDS: '900–1,200', MIN_WORDS: cfg.limits.minWords, MAX_WORDS: cfg.limits.maxWords,
+  TARGET_WORDS: '450–600', MIN_WORDS: cfg.limits.minWords, MAX_WORDS: cfg.limits.maxWords,
 });
 
 const recent = published.slice(-cfg.limits.recentEssaysInFull);
