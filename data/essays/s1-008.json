@@ -20,7 +20,7 @@
     "flagged": false
   },
   "draftedAt": "2026-10-19T05:32:12.869Z",
-  "publishAt": "2026-10-19T16:00:00.000Z",
   "runUrl": "https://github.com/frontierdebate/thefrontierdebate/actions/runs/39204948417",
-  "issue": 8
+  "issue": 8,
+  "publishedAt": "2026-10-19T16:27:18.496Z"
 }
