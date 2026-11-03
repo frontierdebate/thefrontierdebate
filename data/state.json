@@ -1,5 +1,5 @@
 {
-  "seasonIndex": 0,
+  "seasonIndex": 1,
   "coinFlips": {
     "1": {
       "first": "openai",
@@ -9,5 +9,5 @@
     }
   },
   "consecutiveStale": 0,
-  "status": "running"
+  "status": "waiting-for-season"
 }
